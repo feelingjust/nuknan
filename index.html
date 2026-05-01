@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free Nokos - TempSMS</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --gold: #f5c842;
+            --gold-bright: #ffe066;
+            --gold-dim: #c9972a;
+            --gold-muted: #7a5c10;
+            --bg-base: #0d0d0d;
+            --bg-card: #161410;
+            --bg-card2: #1e1a10;
+            --bg-border: #2e2510;
+            --text-main: #f0e6c0;
+            --text-muted: #7a6e50;
+            --text-dim: #4a4030;
+            --success: #4caf50;
+            --danger: #ef5350;
+            --info: #29b6f6;
+        }
+
+        body {
+            font-family: 'Syne', sans-serif;
+            background: var(--bg-base);
+            color: var(--text-main);
+            min-height: 100vh;
+            background-image:
+                radial-gradient(ellipse at 20% 20%, rgba(245,200,66,0.06) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 80%, rgba(245,200,66,0.04) 0%, transparent 60%);
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+        .hero {
+            text-align: center;
+            padding: 3.5rem 0 2rem;
+            position: relative;
+        }
+        .hero::after {
+            content: '';
+            display: block;
+            width: 180px; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            margin: 2rem auto 0;
+        }
+        .hero-badge {
+            display: inline-block;
+            background: rgba(245,200,66,0.12);
+            border: 1px solid var(--gold-muted);
+            color: var(--gold);
+            font-family: 'Space Mono', monospace;
+            font-size: 0.72rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            padding: 0.35rem 1rem;
+            border-radius: 4px;
+            margin-bottom: 1.5rem;
+        }
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: var(--gold);
+            text-shadow: 0 0 40px rgba(245,200,66,0.25);
+            margin-bottom: 0.9rem;
+        }
+        .hero p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            max-width: 520px;
+            margin: 0 auto 2rem;
+            line-height: 1.7;
+        }
+        .cta-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: var(--gold);
+            color: #0d0d0d;
+            padding: 0.85rem 2rem;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: all 0.2s;
+            letter-spacing: 0.03em;
+        }
+        .cta-button:hover {
+            background: var(--gold-bright);
+            box-shadow: 0 0 24px rgba(245,200,66,0.35);
+            transform: translateY(-2px);
+        }
+        
+        .stats { padding: 1.5rem 0; margin: 1.5rem 0; }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }
+        @media (max-width: 768px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 400px) { .stats-grid { grid-template-columns: 1fr; } }
+
+        .stat-item {
+            background: var(--bg-card);
+            border: 1px solid var(--bg-border);
+            border-radius: 10px;
+            padding: 1.2rem 1rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .stat-item::before {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+        }
+        .stat-item h3 {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--gold);
+            line-height: 1;
+            margin-bottom: 0.3rem;
+        }
+        .stat-item p {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .numbers-section { padding: 1rem 0 4rem; }
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--gold);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .section-title i { font-size: 1.1rem; opacity: 0.7; }
+
+        .numbers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.2rem;
+        }
+        @media (max-width: 600px) { .numbers-grid { grid-template-columns: 1fr; } }
+
+        .number-card {
+            background: var(--bg-card);
+            border: 1px solid var(--bg-border);
+            border-radius: 14px;
+            padding: 1.5rem;
+            transition: all 0.25s;
+            position: relative;
+            overflow: hidden;
+        }
+        .number-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--gold-dim), var(--gold), var(--gold-dim));
+            opacity: 0.6;
+        }
+        .number-card:hover {
+            border-color: var(--gold-muted);
+            box-shadow: 0 0 30px rgba(245,200,66,0.08);
+            transform: translateY(-4px);
+        }
+        .number-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.2rem;
+        }
+        .number {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--gold-bright);
+            letter-spacing: 0.03em;
+        }
+        .country-flag {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.2rem;
+        }
+        .number-actions { display: flex; gap: 0.5rem; }
+
+        .btn {
+            padding: 0.45rem 0.8rem;
+            border: none;
+            border-radius: 7px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        .btn-copy {
+            background: rgba(245,200,66,0.12);
+            color: var(--gold);
+            border: 1px solid rgba(245,200,66,0.2);
+        }
+        .btn-copy:hover { background: rgba(245,200,66,0.22); }
+
+        .btn-refresh {
+            background: rgba(76,175,80,0.12);
+            color: #4caf50;
+            border: 1px solid rgba(76,175,80,0.2);
+        }
+        .btn-refresh:hover { background: rgba(76,175,80,0.22); }
+        .btn-refresh:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .messages {
+            max-height: 260px;
+            overflow-y: auto;
+            border-top: 1px solid var(--bg-border);
+            padding-top: 1rem;
+            margin-top: 0.5rem;
+        }
+        .messages::-webkit-scrollbar { width: 4px; }
+        .messages::-webkit-scrollbar-track { background: transparent; }
+        .messages::-webkit-scrollbar-thumb { background: var(--gold-muted); border-radius: 10px; }
+
+        .message {
+            display: flex;
+            gap: 0.8rem;
+            padding: 0.8rem;
+            background: var(--bg-card2);
+            border-radius: 8px;
+            margin-bottom: 0.6rem;
+            border-left: 2px solid var(--gold-dim);
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-12px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+        .message-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 0.15rem;
+            min-width: 64px;
+        }
+        .message-time {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            font-family: 'Space Mono', monospace;
+        }
+        .message-from {
+            font-size: 0.62rem;
+            color: var(--info);
+            font-family: 'Space Mono', monospace;
+        }
+        .message-content {
+            flex: 1;
+            word-break: break-word;
+            font-size: 0.9rem;
+            color: var(--text-main);
+            line-height: 1.5;
+        }
+        .no-messages {
+            text-align: center;
+            color: var(--text-dim);
+            padding: 1.5rem;
+            font-size: 0.85rem;
+            font-style: italic;
+        }
+
+        .card-status {
+            font-size: 0.72rem;
+            font-family: 'Space Mono', monospace;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            min-height: 1rem;
+        }
+        .card-status.ok  { color: #4caf50; }
+        .card-status.err { color: var(--danger); }
+
+        .loading {
+            display: inline-block;
+            width: 14px; height: 14px;
+            border: 2px solid rgba(245,200,66,.3);
+            border-radius: 50%;
+            border-top-color: var(--gold);
+            animation: spin 0.8s linear infinite;
+            vertical-align: middle;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0 3rem;
+        }
+        .feature-item {
+            background: var(--bg-card);
+            border: 1px solid var(--bg-border);
+            border-radius: 10px;
+            padding: 1.2rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.8rem;
+        }
+        .feature-item i { color: var(--gold); font-size: 1.3rem; margin-top: 0.1rem; flex-shrink: 0; }
+        .feature-item h3 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.2rem; color: var(--text-main); }
+        .feature-item p  { font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; }
+
+        .toast {
+            position: fixed;
+            top: 20px; right: 20px;
+            padding: 0.8rem 1.2rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-family: 'Space Mono', monospace;
+            z-index: 9999;
+            transform: translateX(400px);
+            transition: transform 0.3s;
+            max-width: 300px;
+        }
+        .toast.show    { transform: translateX(0); }
+        .toast.success { background: rgba(76,175,80,0.9); color: white; }
+        .toast.info    { background: rgba(41,182,246,0.9); color: white; }
+        .toast.error   { background: rgba(239,83,80,0.9); color: white; }
+    </style>
+</head>
+<body>
+
+    <section class="hero" id="home">
+        <div class="container">
+            <div class="hero-badge"><i class="fas fa-satellite-dish"></i> &nbsp;SMS Wa Virtual Online</div>
+            <h1>Nokos WhatsApp Fresh</h1>
+            <p>Terima SMS online gratis tanpa pungut biaya. Tips And Trick pemakaian. Salin, regis, mendapat kode, Tekan tombol refresh pada nomor untuk memuat pesan terbaru.</p>
+            <a href="#numbers" class="cta-button">
+                <i class="fas fa-phone"></i> Lihat Nomor Tersedia
+            </a>
+        </div>
+    </section>
+    
+            <div class="features">
+                <div class="feature-item">
+                    <i class="fas fa-shield-alt"></i>
+                    <div>
+                        <h3>100% Gratis</h3>
+                        <p>Tanpa biaya tersembunyi, gunakan sepuasnya</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-database"></i>
+                    <div>
+                        <h3>Database Powered</h3>
+                        <p>Pesan dimuat langsung dari sumber eksternal</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-globe"></i>
+                    <div>
+                        <h3>Multi Negara</h3>
+                        <p>Nomor dari berbagai negara tersedia</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-lock"></i>
+                    <div>
+                        <h3>Privasi Terjamin</h3>
+                        <p>Data Anda aman dan tidak disimpan di server</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="stats">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <h3 id="total-numbers">0</h3>
+                    <p>Nomor Aktif</p>
+                </div>
+                <div class="stat-item">
+                    <h3 id="total-sms">0</h3>
+                    <p>SMS Diterima</p>
+                </div>
+                <div class="stat-item">
+                    <h3 id="succes-numbers">1</h3>
+                    <p>Nomor Sukses</p>
+                </div>
+                <div class="stat-item">
+                    <h3 id="uptime">####</h3>
+                    <p>Uptime</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="numbers-section" id="numbers">
+        <div class="container">
+            <h2 class="section-title"><i class="fas fa-sim-card"></i> Pilih Nomor Virtual</h2>
+            <div class="numbers-grid" id="numbersGrid"></div>
+
+    <script>
+
+    const numbersData = [
+        { id: 1, number: '+62 813-5636-2510', country: 'Indonesia', flag: '🇮🇩', messages: [] }
+        //{ id: 2, number: '+62 899-8209-183',   country: 'Indonesia',       flag: '🇮🇩', messages: [] }//
+    ];
+
+    document.addEventListener('DOMContentLoaded', () => {
+        renderNumbers();
+        updateStats();
+    });
+    
+    const JSON_URL = 'https://raw.githubusercontent.com/feelingjust/lsopmz/refs/heads/main/messages.json';
+
+    async function fetchMessagesForNumber(numObj) {
+        const btn    = document.getElementById(`btn-refresh-${numObj.id}`);
+        const status = document.getElementById(`status-${numObj.id}`);
+
+        btn.disabled = true;
+        btn.innerHTML = '<div class="loading"></div>';
+        status.textContent = 'Memuat...';
+        status.className = 'card-status';
+
+        try {
+
+            const url = `${JSON_URL}?t=${Date.now()}`;
+            const res = await fetch(url);
+
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+            const data = await res.json();
+
+            const key = findKey(data, numObj.number);
+
+            if (key && Array.isArray(data[key]) && data[key].length > 0) {
+                numObj.messages = data[key].map(m => ({
+                    time:    m.time    || new Date().toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' }),
+                    from:    m.from    || '',
+                    content: m.content || '',
+                }));
+            } else {
+                numObj.messages = [];
+            }
+
+            renderMessages(numObj);
+            updateStats();
+
+            const count = numObj.messages.length;
+            status.textContent = count > 0
+                ? `✓ ${count} pesan — ${new Date().toLocaleTimeString('id-ID')}`
+                : `✓ Tidak ada pesan — ${new Date().toLocaleTimeString('id-ID')}`;
+            status.className = 'card-status ok';
+
+            showToast(count > 0
+                ? `${count} pesan untuk ${numObj.flag} ${numObj.number}`
+                : `Tidak ada pesan baru untuk ${numObj.number}`, 'info');
+
+        } catch(e) {
+            status.textContent = `✗ Gagal: ${e.message}`;
+            status.className = 'card-status err';
+            showToast(`Gagal memuat pesan: ${e.message}`, 'error');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-sync-alt"></i>';
+        }
+    }
+
+    function normalize(num) {
+        return num.replace(/[\s\-()]/g, '');
+    }
+
+    function findKey(data, number) {
+        const target = normalize(number);
+        for (const key of Object.keys(data)) {
+            if (normalize(key) === target) return key;
+        }
+        return null;
+    }
+
+    function renderNumbers() {
+        const grid = document.getElementById('numbersGrid');
+        grid.innerHTML = '';
+        numbersData.forEach(n => {
+            const card = document.createElement('div');
+            card.className = 'number-card';
+            card.id = `card-${n.id}`;
+            card.innerHTML = `
+                <div class="number-header">
+                    <div>
+                        <div class="number">${n.number}</div>
+                        <div class="country-flag">${n.flag} ${n.country}</div>
+                    </div>
+                    <div class="number-actions">
+                        <button class="btn btn-copy" onclick="copyNumber('${n.number}')">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                        <button class="btn btn-refresh" id="btn-refresh-${n.id}" onclick="fetchMessagesForNumber(numbersData.find(x=>x.id===${n.id}))">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-status" id="status-${n.id}">Tekan refresh untuk memuat pesan</div>
+                <div class="messages" id="messages-${n.id}">
+                    <div class="no-messages">Tidak ada pesan satu pun</div>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    function renderMessages(numObj) {
+        const container = document.getElementById(`messages-${numObj.id}`);
+        if (!container) return;
+        container.innerHTML = numObj.messages.length
+            ? numObj.messages.map(m => `
+                <div class="message">
+                    <div class="message-meta">
+                        <div class="message-time">${escHtml(m.time)}</div>
+                        ${m.from ? `<div class="message-from">${escHtml(m.from)}</div>` : ''}
+                    </div>
+                    <div class="message-content">${escHtml(m.content)}</div>
+                </div>
+              `).join('')
+            : '<div class="no-messages">Tidak ada pesan untuk nomor ini</div>';
+    }
+
+    function updateStats() {
+        document.getElementById('total-numbers').textContent = numbersData.length;
+        let total = 0;
+        numbersData.forEach(n => total += n.messages.length);
+        document.getElementById('total-sms').textContent = total;
+    }
+
+    function copyNumber(num) {
+        navigator.clipboard.writeText(num).then(() => showToast('Nomor disalin!', 'success'));
+    }
+
+    function showToast(msg, type = 'info') {
+        const t = document.createElement('div');
+        t.className = `toast ${type}`;
+        t.textContent = msg;
+        document.body.appendChild(t);
+        setTimeout(() => t.classList.add('show'), 50);
+        setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 300); }, 3500);
+    }
+
+    function escHtml(str) {
+        return String(str)
+            .replace(/&/g,'&amp;')
+            .replace(/</g,'&lt;')
+            .replace(/>/g,'&gt;');
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+        a.addEventListener('click', e => {
+            e.preventDefault();
+            const t = document.querySelector(a.getAttribute('href'));
+            if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    });
+    </script>
+  <script src="https://nani-sigma.vercel.app/assets/js/cumantampilan.js"></script>
+</body>
+</html>
